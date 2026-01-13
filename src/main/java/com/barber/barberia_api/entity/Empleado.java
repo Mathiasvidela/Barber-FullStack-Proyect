@@ -1,30 +1,23 @@
 package com.barber.barberia_api.entity;
 
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "clientes", schema = "public")
+@Table(name = "empleados")
 
-public class Cliente {
+public class Empleado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    //campos de la tabla
     private Integer id;
 
-    @Column(nullable = false)
     private String nombre;
-
-    @Column(nullable = false)
     private String apellido;
 
-    private String telefono;
-
-    private String email;
-
-    //constructor vacio
-    public Cliente() {}
+    @ManyToOne
+    @JoinColumn(name ="especialidad_id", nullable = false)
+    private Especialidad especialidad;
 
     //Getters
 
@@ -40,16 +33,11 @@ public class Cliente {
         return apellido;
     }
 
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public String getEmail() {
-        return email;
+    public Especialidad getEspecialidad() {
+        return especialidad;
     }
 
     //Setters
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -62,15 +50,9 @@ public class Cliente {
         this.apellido = apellido;
     }
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setEspecialidad(Especialidad especialidad) {
+        this.especialidad = especialidad;
     }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-
 
 
 }
