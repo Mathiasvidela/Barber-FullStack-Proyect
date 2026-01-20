@@ -1,5 +1,8 @@
 package com.barber.barberia_api.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -34,11 +37,14 @@ public class Turno {
     @Column(nullable = false)
     private EstadoTurno estado = EstadoTurno.PENDIENTE;
 
-    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 
     //Getters
     public Long getId() {

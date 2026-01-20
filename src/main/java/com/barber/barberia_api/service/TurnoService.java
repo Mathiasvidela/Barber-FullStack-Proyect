@@ -3,7 +3,9 @@ package com.barber.barberia_api.service;
 import com.barber.barberia_api.dto.TurnoCreateRequest;
 import com.barber.barberia_api.entity.*;
 import com.barber.barberia_api.repository.*;
+import com.barber.barberia_api.dto.TurnoResponse;
 
+import java.util.stream.Collectors;
 import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -30,12 +32,16 @@ public class TurnoService {
 
     }
 
-    public List<Turno> listar(){
-        return turnoRepo.findAll();
+    //listar turnos desde el dto response
+    public List<TurnoResponse> listar(){
+        return turnoRepo.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
 
-    public Turno crear(TurnoCreateRequest req){
+    public TurnoResponse crear(TurnoCreateRequest req){
         //validaciones
 
         if (req.inicio == null) throw  new IllegalArgumentException("Se requiere un inicio valido");
@@ -75,7 +81,9 @@ public class TurnoService {
         t.setFin(req.fin);
         t.setEstado(EstadoTurno.PENDIENTE);
 
-        return turnoRepo.save(t);
+         Turno guardado = turnoRepo.saveAndFlush(t);
+
+        return TurnoResponse.from(guardado);
 
     }
 
@@ -83,7 +91,7 @@ public class TurnoService {
 
     //-----------Confirmar turno-----------
     @Transactional
-    public Turno confirmar (long turnoId){
+    public TurnoResponse confirmar (Long turnoId){
 
         Turno turno = turnoRepo.findById(turnoId)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el turno: " + turnoId));
@@ -105,13 +113,16 @@ public class TurnoService {
 
                 turno.setEstado(EstadoTurno.CONFIRMADO);
                 turno.setUpdatedAt(LocalDateTime.now());
-                return turnoRepo.save(turno);
+
+                //guarda el turno y lo devuelve como dto
+                Turno guardado = turnoRepo.save(turno);
+                return toResponse(guardado);
 
     }
 
     //-----------cancelar turno-----------
     @Transactional
-    public Turno cancelar (long turnoId){
+    public TurnoResponse cancelar (Long turnoId){
 
         Turno turno = turnoRepo.findById(turnoId)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el turno: " + turnoId));
@@ -122,26 +133,58 @@ public class TurnoService {
 
                 turno.setEstado(EstadoTurno.CANCELADO);
                 turno.setUpdatedAt(LocalDateTime.now());
-                return turnoRepo.save(turno);
+
+                Turno guardado = turnoRepo.save(turno);
+                return toResponse(guardado);
 
     }
 
     //----------completar turno-----------
     @Transactional
-    public Turno completar (long turnoId){
+    public TurnoResponse completar (Long turnoId){
 
         Turno turno = turnoRepo.findById(turnoId)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el turno: " + turnoId));
 
-                if (turno.getEstado() != EstadoTurno.CONFIRMADO){
-                    throw new IllegalArgumentException("Solo se pueden completar turnos confirmados");
-                }
+            if (turno.getEstado() != EstadoTurno.CONFIRMADO){
+                throw new IllegalArgumentException("Solo se pueden completar turnos confirmados");
+            }
 
 
-              turno.setEstado(EstadoTurno.COMPLETADO);
-              turno.setUpdatedAt(LocalDateTime.now());
-              return turnoRepo.save(turno);
+            turno.setEstado(EstadoTurno.COMPLETADO);
+            turno.setUpdatedAt(LocalDateTime.now());
+              
+            Turno guardado = turnoRepo.save(turno);
+            return toResponse(guardado);
+
+    }
+
+
+    private TurnoResponse toResponse(Turno turno) {
+    
+        TurnoResponse resp = new TurnoResponse();
+        resp.id = turno.getId();
+
+        resp.clienteId = turno.getCliente().getId();
+        resp.clienteNombre = turno.getCliente().getNombre() + " " + turno.getCliente().getApellido();
+
+        resp.empleadoId = turno.getEmpleado().getId();
+        resp.empleadoNombre = turno.getEmpleado().getNombre() + " " + turno.getEmpleado().getApellido();
+
+        resp.servicioId = turno.getServicio().getId();
+        resp.servicioNombre = turno.getServicio().getNombre();
+
+        resp.inicio = turno.getInicio();
+        resp.fin = turno.getFin();
+
+        resp.estado = turno.getEstado().name();
+        resp.createdAt = turno.getCreatedAt();
+        resp.updatedAt = turno.getUpdatedAt();
+
+        return resp;
+    
 
     }
 
 }
+
