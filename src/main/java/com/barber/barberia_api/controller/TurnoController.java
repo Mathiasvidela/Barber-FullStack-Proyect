@@ -27,6 +27,21 @@ public class TurnoController {
         return service.crear(req);
     }
 
+    @PatchMapping("/{id}/confirmar")
+    public Turno confirmar(@PathVariable Long id) {
+        return service.confirmar(id);
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public Turno cancelar(@PathVariable Long id) {
+        return service.cancelar(id);
+    }
+
+    @PatchMapping("/{id}/completar")
+    public Turno completar(@PathVariable Long id) {
+        return service.completar(id);
+    }
+
 
 
 }

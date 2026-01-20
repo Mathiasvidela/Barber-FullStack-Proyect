@@ -34,6 +34,12 @@ public class Turno {
     @Column(nullable = false)
     private EstadoTurno estado = EstadoTurno.PENDIENTE;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     //Getters
     public Long getId() {
         return id;
@@ -63,6 +69,14 @@ public class Turno {
         return estado;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     //Setters
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
@@ -86,6 +100,13 @@ public class Turno {
 
     public void setEstado(EstadoTurno estado) {
         this.estado = estado;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 
