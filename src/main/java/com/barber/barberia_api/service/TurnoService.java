@@ -4,6 +4,8 @@ import com.barber.barberia_api.dto.TurnoCreateRequest;
 import com.barber.barberia_api.entity.*;
 import com.barber.barberia_api.repository.*;
 import com.barber.barberia_api.dto.TurnoResponse;
+import com.barber.barberia_api.exception.ConflictException;
+import com.barber.barberia_api.exception.NotFoundException;
 
 import java.util.stream.Collectors;
 import jakarta.transaction.Transactional;
@@ -69,7 +71,7 @@ public class TurnoService {
         );
 
         if (choca){
-            throw new IllegalArgumentException("El empleado ya tiene un turno en ese horario");
+            throw new ConflictException("El empleado ya tiene un turno en ese horario");
         }
 
         // crear y guardar
@@ -94,7 +96,7 @@ public class TurnoService {
     public TurnoResponse confirmar (Long turnoId){
 
         Turno turno = turnoRepo.findById(turnoId)
-                .orElseThrow(() -> new IllegalArgumentException("No existe el turno: " + turnoId));
+                .orElseThrow(() -> new NotFoundException("No existe el turno: " + turnoId));
 
                 //turno cancelado
                 if (turno.getEstado() == EstadoTurno.CANCELADO){

@@ -10,6 +10,15 @@ public class ErrorResponse {
     public String error; //tipo de error
     public String message; //mensaje
     public String path; //ruta que genero el error
+    
+     //constructors
+    public ErrorResponse() {
+    }
+
+    public ErrorResponse(String message, int status) {
+        this.message = message;
+        this.status = status;
+    }
 
     public static ErrorResponse of(int status, String error, String message, String path) {
         ErrorResponse resp = new ErrorResponse();
@@ -20,6 +29,8 @@ public class ErrorResponse {
         resp.path = path;
         return resp;
     }
+
+    
 
 
     
